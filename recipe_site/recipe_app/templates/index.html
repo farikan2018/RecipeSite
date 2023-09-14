@@ -1,0 +1,21 @@
+{% extends 'firstapp/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>Главная страница</h1>
+{% for i in tanks %}
+    <div class="alert alert-warning mt-2">
+        <h3>{{ i.title }}</h3>
+        <nav class="nav">
+            <a class="nav-link active" href="/strana/{{ i.strana.pk }}">{{ i.strana }}</a>
+            <a class="nav-link active" href="/klas/{{ i.klas.pk }}">{{ i.klas }}</a>
+        </nav>
+        {% if i.photo %}
+            <img src="{{ i.photo.url}}" width="300" height="200" alt="Иллюстрация" align="right"  vspace="15" hspace="5">
+        {% else %}
+        <p></p>
+        {% endif %}
+        <p>{{ i.opis }}</p>
+        <a href="{{ i.silka }}" class="btn btn-primary">Подробнее...</a>
+    </div>
+{% endfor %}
+{% endblock %}
