@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .header-rectangle {
+        background-color: #FFA500;
+        border-radius: 36px;
+        font-size: 44px;
+        font-family: "RocknRoll One", sans-serif;
+        color: black;
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 0px;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .fixed-image {
+        margin-top: 20px;
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .recipe-details {
+        margin-top: 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #dcdcdc;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .recipe-details h1 {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .recipe-details p {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    .recipe-ingredients,
+    .recipe-instructions {
+        background-color: #fff;
+        border: 1px solid #dcdcdc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .recipe-ingredients h2,
+    .recipe-instructions h2 {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .recipe-ingredients ul,
+    .recipe-instructions ol {
+        padding-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .recipe-ingredients li,
+    .recipe-instructions li {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    .rounded-circle {
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="header-rectangle">{{ recipe.title }}</h1>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <img src="{{ recipe.recipe_image.url }}" class="fixed-image" alt="{{ recipe.title }}">
+        </div>
+        <div class="col-md-6 recipe-details">
+            <p>
+                <strong>Складність приготування:</strong> {{ recipe.difficulty_level }}<br>
+                <strong>Час приготування:</strong> {{ recipe.preparation_time }}<br>
+                <strong>Категорія:</strong> {{ recipe.category }}<br>
+                <strong>Автор:</strong> {{ recipe.author }}<br>
+                <strong>Дата створення:</strong> {{ recipe.date_created }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 recipe-ingredients">
+            <h2>Інгредієнти</h2>
+            {{ recipe.ingredients|linebreaks }}
+        </div>
+        <div class="col-md-6 recipe-instructions">
+            <h2>Інструкція</h2>
+            {{ recipe.instructions|linebreaks }}
+        </div>
+    </div>
+</div><br>
+
+<div class="container text-dark">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-11 col-lg-9 col-xl-7">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-row align-items-start">
+                        <div class="w-100">
+                            <h5>Додати коментар</h5>
+                            <form method="post" class="mb-4" id="commentForm">
+                                {% csrf_token %}
+                                <div class="form-outline">
+                                    <textarea class="form-control" name="text" id="commentText" rows="3"></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    {% if request.user.is_authenticated %}
+                                    <button type="submit" class="btn btn-success" form="commentForm">Додати
+                                        коментар</button>
+                                    {% else %}
+                                    <h5>Для пропозиції запису потрібно увійти в акаунт</h5>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><br>
+
+
+{% for comment in comments %}
+<div class="container text-dark">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-11 col-lg-9 col-xl-7">
+            <div class="d-flex flex-start mb-4">
+                <div class="card w-100">
+                    <div class="card-body p-4">
+                        <div class="">
+                            <h5>{{ comment.author }}</h5>
+                            <p class="small">{{ comment.date_created }}</p>
+                            <p>
+                                {{ comment.text }}
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="justify-content-center">
+<h5>Поки що немає коментарів...</h5>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

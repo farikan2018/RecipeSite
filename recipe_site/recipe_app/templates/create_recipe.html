@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+Створити запис
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .header-rectangle {
+        background-color: #66B2FF;
+        border-radius: 36px;
+        font-size: 44px;
+        font-family: "RocknRoll One", sans-serif;
+        color: black; /* Змінено колір тексту на чорний */
+        text-align: center;
+        padding: 20px; /* Збільшено внутрішні відступи */
+        margin-bottom: 30px; /* Додано зовнішній відступ знизу */
+        width: 50%; /* Змінено ширину верхнього прямокутника */
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<div class="container">
+    <h1 class="header-rectangle">Запропонувати запис</h1>
+    <form class="form-horizontal form_middle" enctype='multipart/form-data' method="post" id="recipeForm">
+        {% csrf_token %}
+        {{ form.title }}<br>
+        {{ form.ingredients }}<br>
+        {{ form.instructions }}<br>
+        {{ form.preparation_time }}<br>
+        {{ form.servings }}<br>
+        Виберіть складність приготування:
+        {{ form.difficulty_level }}<br>
+        Виберите категорію страви:
+        {{ form.category }}<br>
+        Завантажте фото страви:
+        {{ form.recipe_image }}<br>
+        {% if request.user.is_authenticated %}
+        <button type="submit" class="btn btn-success" id="submitRecipeButton">Запропонувати публікацію</button>
+        <span>{{ error }}</span>
+        {% else %}
+        <h5>Для пропозиції запису потрібно увійти в акаунт</h5>
+        {% endif %}
+    </form>
+</div><br>
+
+
+{% endblock %}

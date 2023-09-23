@@ -2,6 +2,8 @@ from django.db import models
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.utils.translation import gettext as _
 
 # Модель для складності рецепту
 class DifficultyLevel(models.Model):
@@ -17,6 +19,7 @@ class DifficultyLevel(models.Model):
 # Модель для категорій рецептів
 class Category(models.Model):
     name = models.CharField('Назва категорії',max_length=100)
+    category_image = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото страви', blank=True, null=True,)
 
     def __str__(self):
         return self.name
@@ -30,7 +33,7 @@ class Recipe(models.Model):
     title = models.CharField('Назва страви', max_length=200)
     ingredients = models.TextField('Інгрідієнти')
     instructions = models.TextField('Інструкція')
-    preparation_time = models.PositiveIntegerField('Час готування')
+    preparation_time = models.TextField('Час готування')
     servings = models.PositiveIntegerField('Кількість порцій')
     difficulty_level = models.ForeignKey(DifficultyLevel, on_delete=models.CASCADE, verbose_name='Складність приготування')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категорія страви')
@@ -81,3 +84,4 @@ class FavoriteRecipe(models.Model):
 
     def __str__(self):
         return f'{self.user.username} added {self.recipe.title} to favorites'
+    

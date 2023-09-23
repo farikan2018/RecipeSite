@@ -1,21 +1,45 @@
-{% extends 'firstapp/base.html' %}
-{% block title %}{{ title }}{% endblock %}
+{% extends 'base.html' %}
+
 {% block content %}
-<h1>Главная страница</h1>
-{% for i in tanks %}
-    <div class="alert alert-warning mt-2">
-        <h3>{{ i.title }}</h3>
-        <nav class="nav">
-            <a class="nav-link active" href="/strana/{{ i.strana.pk }}">{{ i.strana }}</a>
-            <a class="nav-link active" href="/klas/{{ i.klas.pk }}">{{ i.klas }}</a>
-        </nav>
-        {% if i.photo %}
-            <img src="{{ i.photo.url}}" width="300" height="200" alt="Иллюстрация" align="right"  vspace="15" hspace="5">
-        {% else %}
-        <p></p>
-        {% endif %}
-        <p>{{ i.opis }}</p>
-        <a href="{{ i.silka }}" class="btn btn-primary">Подробнее...</a>
+<style>
+    .hvr-shrink {
+        display: inline-block;
+        vertical-align: middle;
+        transform: scale(1);
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .hvr-shrink:hover,
+    .hvr-shrink:focus,
+    .hvr-shrink:active {
+        transform: scale(0.97);
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-4">
+            <form action="{% url 'search_recipes' %}" method="GET">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Знайди необхідний рецепт" name="q">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Пошук</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-{% endfor %}
+
+    <div class="row">
+        {% for category in categories %}
+            <div class="col-md-6 mb-4">
+                <a href="{% url 'category_recipes' category.id %}">
+                    <div class="card hvr-shrink">
+                        <img src="{{ category.category_image.url }}" class="card-img-top" alt="{{ category.name }}">
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
