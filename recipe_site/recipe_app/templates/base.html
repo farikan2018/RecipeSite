@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
         crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <header
         class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom alert alert-primary">
         <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none"></a>
@@ -28,13 +29,112 @@
         </ul>
         <div class="col-md-3 text-end">
             {% if request.user.is_authenticated %}
-            Ласкаво просимо {{ user.username }} | <a href="{% url 'logout' %}" class="btn btn-primary">Вийти</a>
+            Ласкаво просимо <a href="{% url 'favorite_recipes' %}">{{ user.username }}</a> | <a href="{% url 'logout' %}" class="btn btn-primary">Вийти</a>
             {% else %}
             <a href="{% url 'register' %}" class="btn btn-outline-primary me-2">Реєстрація</a>
             <a href="{% url 'login' %}" class="btn btn-primary">Увійти</a>
             {% endif %}
         </div>
     </header>
+
+    <style>
+        .header-rectangle {
+            background-color: #FFA500;
+            border-radius: 36px;
+            font-size: 44px;
+            font-family: "RocknRoll One", sans-serif;
+            color: black;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 0px;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    
+        .fixed-image {
+            margin-top: 20px;
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    
+        .recipe-details {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .recipe-details h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    
+        .recipe-details p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+        }
+    
+        .recipe-ingredients,
+        .recipe-instructions {
+            background-color: #fff;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .recipe-ingredients h2,
+        .recipe-instructions h2 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    
+        .recipe-ingredients ul,
+        .recipe-instructions ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+    
+        .recipe-ingredients li,
+        .recipe-instructions li {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+        }
+    
+        .rounded-circle {
+            margin-right: 10px;
+        }
+        .hvr-shrink {
+            display: inline-block;
+            vertical-align: middle;
+            transform: scale(1);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .hvr-shrink:hover,
+        .hvr-shrink:focus,
+        .hvr-shrink:active {
+            transform: scale(0.97);
+        }
+
+        .fixed-image {
+            width: 500px;
+            height: 300px;
+            object-fit: cover;
+        }
+    </style>
 
     {% block content %}{% endblock %}
 

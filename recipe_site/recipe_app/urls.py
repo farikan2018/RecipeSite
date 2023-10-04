@@ -13,4 +13,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('recipe/<int:recipe_id>/', RecipeDetailView.as_view(), name='recipe_detail'),
     path('create_recipe/', create_recipe, name='create_recipe'),
+    path('recipe/<int:recipe_id>/toggle_favorite/', toggle_favorite, name='toggle_favorite'),
+    path('favorite_recipes/', FavoriteRecipesView.as_view(), name='favorite_recipes'),
 ]

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.http import JsonResponse
 
 from .models import *
 from .forms import  *
@@ -97,9 +98,15 @@ class RecipeDetailView(View):
     def get(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         comments = recipe.comment_set.all().order_by('-date_created')
-        form = CommentForm()  # Ініціалізація форми для додавання коментарів
+        form = CommentForm()
+        is_favorite = False  # Початково рецепт не улюблений
 
-        return render(request, 'recipe_detail.html', {'recipe': recipe, 'comments': comments, 'form': form})
+        if request.user.is_authenticated:
+            # Перевірте, чи рецепт улюблений користувачем
+            if FavoriteRecipe.objects.filter(recipe=recipe, user=request.user).exists():
+                is_favorite = True
+
+        return render(request, 'recipe_detail.html', {'recipe': recipe, 'comments': comments, 'form': form, 'is_favorite': is_favorite})
 
     def post(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, pk=recipe_id)
@@ -109,13 +116,27 @@ class RecipeDetailView(View):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.recipe = recipe
-            comment.author = request.user  # Встановлення автора коментаря, якщо користувач увійшов в систему
+            comment.author = request.user
             comment.save()
             return redirect('recipe_detail', recipe_id=recipe_id)
 
         return render(request, 'recipe_detail.html', {'recipe': recipe, 'comments': comments, 'form': form})
     
-    
+
+def toggle_favorite(request, recipe_id):
+    if request.user.is_authenticated:
+        recipe = Recipe.objects.get(pk=recipe_id)
+        user = request.user
+        favorite, created = FavoriteRecipe.objects.get_or_create(user=user, recipe=recipe)
+        if created:
+            message = "Рецепт додано до улюблених."
+        else:
+            favorite.delete()
+            message = "Рецепт видалено з улюблених."
+        return JsonResponse({'message': message})
+    else:
+        return JsonResponse({'message': 'Потрібно увійти в систему, щоб додавати рецепти до улюблених.'})   
+
 
 def create_recipe(request):
     if request.method == 'POST':
@@ -131,3 +152,15 @@ def create_recipe(request):
     return render(request, 'create_recipe.html', {'form': form})
 
 
+class FavoriteRecipesView(View):
+    template_name = 'favorite_recipes.html'
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            user = request.user
+            favorite_recipes = FavoriteRecipe.objects.filter(user=user)
+            # Отримання списку рецептів, які є улюбленими для даного користувача
+            recipes = [fav.recipe for fav in favorite_recipes]
+            return render(request, self.template_name, {'favorite_recipes': favorite_recipes, 'recipes': recipes})
+        else:
+            return render(request, 'not_authenticated.html')
