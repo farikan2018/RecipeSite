@@ -20,16 +20,63 @@
                 <strong>Категорія:</strong> {{ recipe.category }}<br>
                 <strong>Автор:</strong> {{ recipe.author }}<br>
                 <strong>Дата створення:</strong> {{ recipe.date_created }}<br>
-                {% if user.is_authenticated %}
-                <button id="favorite-button" data-recipe-id="{{ recipe.id }}" data-is-favorite="{{ is_favorite }}">
-                    {% if is_favorite %}
-                        Видалити з улюблених
-                    {% else %}
-                        Додати до улюблених
-                    {% endif %}
-                </button>
-                {% endif %}
             </p>
+            <div class="ratingbox d-flex align-items-center rating">
+                <form id="rating-form" method="post" action="{% url 'recipe_detail' recipe.id %}">
+                    {% csrf_token %}
+                    <strong>Рейтинг:</strong>
+                    {% if user.is_authenticated %}
+                    <button 
+                        {% if 1 <=  average_rating%} name="rating" value="1" class="fa fa-star full stars btn btn-outline-light align-right" onclick="rateRecipe(1)" {% endif %}
+                        {% if average_rating > 0 and rating_residue >= 0.5 %} name="rating" value="1" class="fa fa-star-half-full stars btn btn-outline-light align-right" onclick="rateRecipe(1)" {% endif %}
+                        {% if 1 > average_rating %} name="rating" value="1" class="fa fa-star-o stars btn btn-outline-light align-right" onclick="rateRecipe(1)" {% endif %}
+                    </button>
+                    <button 
+                        {% if 2 <=  average_rating%} name="rating" value="2" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(2)"  {% endif %}
+                        {% if average_rating > 1 and rating_residue >= 0.5 %} name="rating" value="2" class="fa fa-star-half-full stars btn btn-outline-light " onclick="rateRecipe(2)" {% endif %}
+                        {% if 2 > average_rating %} name="rating" value="2" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(2)" {% endif %}>
+                    </button>
+                    <button 
+                        {% if 3 <=  average_rating%} name="rating" value="3" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(3)"  {% endif %}
+                        {% if average_rating > 2 and rating_residue >= 0.5 %} name="rating" value="3" class="fa fa-star-half-full stars btn btn-outline-light" onclick="rateRecipe(3)" {% endif %}
+                        {% if 3 > average_rating %} name="rating" value="3" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(3)" {% endif %}>
+                    </button>
+                    <button 
+                        {% if 4 <=  average_rating%} name="rating" value="4" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(4)"  {% endif %}
+                        {% if average_rating > 3 and rating_residue >= 0.5 %} name="rating" value="4" class="fa fa-star-half-full stars btn btn-outline-light" onclick="rateRecipe(4)" {% endif %}
+                        {% if 4 > average_rating %} name="rating" value="4" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(4)" {% endif %}>
+                    </button>
+                    <button 
+                        {% if 5 <=  average_rating%} name="rating" value="5" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(5)"  {% endif %}
+                        {% if average_rating > 4 and rating_residue >= 0.5 %} name="rating" value="5" class="fa fa-star-half-full stars btn btn-outline-light" onclick="rateRecipe(5)" {% endif %}
+                        {% if 5 > average_rating %} name="rating" value="5" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(5)" {% endif %}>
+                    </button>
+                    {% else %}
+                    <span class="mr-1">
+                        {% for star in stars %}
+                            {% if star <= average_rating %}
+                                <a href="{% url 'login' %}" class="fa fa-star full stars btn btn-outline-light "></a>
+                            {% elif average_rating > star|add:-1 and rating_residue >= 0.5 %}
+                                <a href="{% url 'login' %}" class="fa fa-star-half-full stars btn btn-outline-light"></a>
+                            {% elif star > average_rating %}
+                                <a href="{% url 'login' %}" class="fa fa-star-o stars btn btn-outline-light"></a>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    {% endif %}
+                    <strong class="ml-0.5">{{ average_rating }}</strong>
+                    <strong class="ml" style="font-size: 12px;">({{ total_reviews }})</strong>
+                </form>
+        </div>
+        {% if user.is_authenticated %}
+        <button id="favorite-button" data-recipe-id="{{ recipe.id }}" data-is-favorite="{{ is_favorite }}" class="btn-rectangle">
+            {% if is_favorite %}
+                Видалити з улюблених
+            {% else %}
+                Додати до улюблених
+            {% endif %}
+        </button>
+        {% endif %}
         </div>
     </div>
 

@@ -75,3 +75,10 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['text']
 
+
+class RatingForm(forms.ModelForm):
+    rating = forms.IntegerField(min_value=1, max_value=5, required=False)
+
+    class Meta:
+        model = Rating
+        fields = ['rating']
