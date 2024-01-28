@@ -10,6 +10,7 @@ from django.views.generic import ListView, CreateView, FormView
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomeRecipe(ListView):
@@ -131,6 +132,7 @@ class RecipeDetailView(View):
             'average_rating': average_rating,
             'total_reviews': total_reviews,
             'rating_residue': rating_residue,
+            'stars': [1,2,3,4,5],
         })
 
     def post(self, request, recipe_id):
@@ -152,11 +154,11 @@ class RecipeDetailView(View):
             # Перевірка на існування оцінки користувача для цього рецепта
             existing_rating = Rating.objects.filter(recipe=recipe, user=request.user).first()
             if existing_rating:
-                # Якщо користувач вже поставив оцінку, оновіть її замість створення нової
+                # Якщо користувач вже поставив оцінку, оновлюємо її замість створення нової
                 existing_rating.rating_value = rating
                 existing_rating.save()
             else:
-                # Якщо користувач ще не ставив оцінку, створіть нову
+                # Якщо користувач ще не ставив оцінку, створюємо нову
                 Rating.objects.create(recipe=recipe, user=request.user, rating_value=rating)
 
             return redirect('recipe_detail', recipe_id=recipe_id)
@@ -212,21 +214,12 @@ class FavoriteRecipesView(View):
             return render(request, 'not_authenticated.html')
         
 
-@require_POST
-def rate_recipe_ajax(request, recipe_id, rating_value):
-    # Перевірте, чи користувач увійшов у систему та чи передано коректне значення оцінки
-    if request.user.is_authenticated and rating_value.isdigit() and 1 <= int(rating_value) <= 5:
-        recipe = Recipe.objects.get(pk=recipe_id)
-        # Оновіть або створіть новий об'єкт рейтингу
-        rating, created = Rating.objects.update_or_create(
-            recipe=recipe,
-            user=request.user,
-            defaults={'rating_value': rating_value}
-        )
-        average_rating = recipe.calculate_average_rating()  # Припустимо, що у вас є метод calculate_average_rating
-        total_reviews = recipe.ratings.count()  # Припустимо, що у вас є зв'язок ratings на моделі Recipe
 
-        return JsonResponse({'average_rating': average_rating, 'total_reviews': total_reviews})
+class UserRecipeListView(LoginRequiredMixin, ListView):
+    model = Recipe
+    template_name = 'user_recipes.html'
+    context_object_name = 'recipes'
+    paginate_by = 10
 
-    return JsonResponse({'error': 'Invalid data'}, status=400)
-
+    def get_queryset(self):
+        return Recipe.objects.filter(author=self.request.user)

@@ -30,7 +30,7 @@
         </ul>
         <div class="col-md-3 text-end">
             {% if request.user.is_authenticated %}
-            Ласкаво просимо <a href="{% url 'favorite_recipes' %}">{{ user.username }}</a> | <a href="{% url 'logout' %}" class="btn btn-primary">Вийти</a>
+            Ласкаво просимо <a href="{% url 'personal_account' %}">{{ user.username }}</a> | <a href="{% url 'logout' %}" class="btn btn-primary">Вийти</a>
             {% else %}
             <a href="{% url 'register' %}" class="btn btn-outline-primary me-2">Реєстрація</a>
             <a href="{% url 'login' %}" class="btn btn-primary">Увійти</a>
@@ -61,6 +61,20 @@
             color: black;
             text-align: center;
             margin-bottom: 0px;
+        }
+
+        .link-rentacle {
+            margin-top: 2px;
+            background-color: #FFA500;
+            border-radius: 15px;
+            font-size: 18px;
+            font-family: "RocknRoll One", sans-serif;
+            text-align: center;
+            margin-bottom: 0px;
+            padding: 0px 4px;
+            display: inline-block; /* Додайте це, щоб надати кнопці ті самі характеристики, що і посиланням */
+            text-decoration: none; /* Заборонити стандартне оформлення тексту посилання */
+            outline: 2px solid black;
         }
     
         .fixed-image {

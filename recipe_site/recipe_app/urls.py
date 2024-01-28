@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from django.views.generic import TemplateView
 
 
 
@@ -15,5 +16,6 @@ urlpatterns = [
     path('create_recipe/', create_recipe, name='create_recipe'),
     path('recipe/<int:recipe_id>/toggle_favorite/', toggle_favorite, name='toggle_favorite'),
     path('favorite_recipes/', FavoriteRecipesView.as_view(), name='favorite_recipes'),
-    path('recipe/<int:recipe_id>/rate/<int:rating_value>/', rate_recipe_ajax, name='rate_recipe_ajax'),
+    path('personal_account/', TemplateView.as_view(template_name='personal_account.html'), name='personal_account'),
+    path('user_recipes/', UserRecipeListView.as_view(), name='user_recipes'),
 ]

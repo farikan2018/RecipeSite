@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Персональний{% endblock %}
+
+{% block content %}
+<style>
+    .header-rectangle {
+        background-color: #66B2FF;
+        margin-bottom: 60px;
+    }
+</style>
+
+<div class="container">
+    <h1 class="header-rectangle">Особистий кабінет</h1>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <a href="{% url 'user_recipes' %}">
+                <div class="card hvr-shrink">
+                    <img src="\media\photos\2024\01\21\Мої_рецепти.png" alt="Моя картинка" class="img-fluid">
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <a href="{% url 'favorite_recipes' %}">
+                <div class="card hvr-shrink">
+                    <img src="\media\photos\2024\01\21\Улюблені_рецепти.png" alt="Моя картинка" class="img-fluid">
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
