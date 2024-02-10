@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 
 from .models import *
 from .forms import  *
@@ -11,6 +11,7 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 
 
 class HomeRecipe(ListView):
@@ -150,18 +151,20 @@ class RecipeDetailView(View):
 
         if rating_form.is_valid():
             rating = rating_form.cleaned_data['rating']
-            
-            # Перевірка на існування оцінки користувача для цього рецепта
-            existing_rating = Rating.objects.filter(recipe=recipe, user=request.user).first()
-            if existing_rating:
-                # Якщо користувач вже поставив оцінку, оновлюємо її замість створення нової
+
+            existing_rating, created = Rating.objects.get_or_create(recipe=recipe, user=request.user, defaults={'rating_value': rating})
+
+            if not created:
                 existing_rating.rating_value = rating
                 existing_rating.save()
-            else:
-                # Якщо користувач ще не ставив оцінку, створюємо нову
-                Rating.objects.create(recipe=recipe, user=request.user, rating_value=rating)
 
-            return redirect('recipe_detail', recipe_id=recipe_id)
+            total_reviews = Rating.objects.filter(recipe=recipe).count()
+            total_rating = Rating.objects.filter(recipe=recipe).aggregate(Sum('rating_value'))['rating_value__sum']
+            average_rating = round(total_rating / total_reviews, 2) if total_reviews > 0 else 0
+            rating_residue = average_rating % 1
+
+            # Повертаємо JsonResponse замість redirect
+            return JsonResponse({'average_rating': average_rating, 'total_reviews': total_reviews, 'rating_residue': rating_residue})
 
         return render(request, self.template_name, {
             'recipe': recipe,
@@ -170,6 +173,32 @@ class RecipeDetailView(View):
             'rating_form': rating_form,
         })
     
+
+def rate_recipe(request, recipe_id):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        rating = int(request.POST.get('rating', 0))
+        
+        if 1 <= rating <= 5:
+            recipe = get_object_or_404(Recipe, pk=recipe_id)
+            user = request.user
+
+            existing_rating, created = Rating.objects.get_or_create(recipe=recipe, user=user, defaults={'rating_value': rating})
+
+            if not created:
+                existing_rating.rating_value = rating
+                existing_rating.save()
+
+            total_reviews = Rating.objects.filter(recipe=recipe).count()
+            total_rating = Rating.objects.filter(recipe=recipe).aggregate(Sum('rating_value'))['rating_value__sum']
+            average_rating = round(total_rating / total_reviews, 2) if total_reviews > 0 else 0
+            rating_residue = average_rating % 1
+
+            return JsonResponse({'average_rating': average_rating, 'total_reviews': total_reviews, 'rating_residue': rating_residue})
+        else:
+            return JsonResponse({'error': 'Invalid rating value'})
+    else:
+        return JsonResponse({'error': 'Invalid request'})
+
 
 def toggle_favorite(request, recipe_id):
     if request.user.is_authenticated:

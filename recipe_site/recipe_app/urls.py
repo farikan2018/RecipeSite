@@ -18,4 +18,5 @@ urlpatterns = [
     path('favorite_recipes/', FavoriteRecipesView.as_view(), name='favorite_recipes'),
     path('personal_account/', TemplateView.as_view(template_name='personal_account.html'), name='personal_account'),
     path('user_recipes/', UserRecipeListView.as_view(), name='user_recipes'),
+    path('recipe/<int:recipe_id>/rate/', rate_recipe, name='recipe_rate'),
 ]

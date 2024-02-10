@@ -22,52 +22,60 @@
                 <strong>Дата створення:</strong> {{ recipe.date_created }}<br>
             </p>
             <div class="ratingbox d-flex align-items-center rating">
-                <form id="rating-form" method="post" action="{% url 'recipe_detail' recipe.id %}">
-                    {% csrf_token %}
-                    <strong>Рейтинг:</strong>
-                    {% if user.is_authenticated %}
-                    <button 
-                        {% if 1 <=  average_rating%} name="rating" value="1" class="fa fa-star full stars btn btn-outline-light align-right" onclick="rateRecipe(1)" {% endif %}
-                        {% if average_rating > 0 and rating_residue >= 0.5 %} name="rating" value="1" class="fa fa-star-half-full stars btn btn-outline-light align-right" onclick="rateRecipe(1)" {% endif %}
-                        {% if 1 > average_rating %} name="rating" value="1" class="fa fa-star-o stars btn btn-outline-light align-right" onclick="rateRecipe(1)" {% endif %}
-                    </button>
-                    <button 
-                        {% if 2 <=  average_rating%} name="rating" value="2" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(2)"  {% endif %}
-                        {% if average_rating > 1 and rating_residue >= 0.5 %} name="rating" value="2" class="fa fa-star-half-full stars btn btn-outline-light " onclick="rateRecipe(2)" {% endif %}
-                        {% if 2 > average_rating %} name="rating" value="2" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(2)" {% endif %}>
-                    </button>
-                    <button 
-                        {% if 3 <=  average_rating%} name="rating" value="3" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(3)"  {% endif %}
-                        {% if average_rating > 2 and rating_residue >= 0.5 %} name="rating" value="3" class="fa fa-star-half-full stars btn btn-outline-light" onclick="rateRecipe(3)" {% endif %}
-                        {% if 3 > average_rating %} name="rating" value="3" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(3)" {% endif %}>
-                    </button>
-                    <button 
-                        {% if 4 <=  average_rating%} name="rating" value="4" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(4)"  {% endif %}
-                        {% if average_rating > 3 and rating_residue >= 0.5 %} name="rating" value="4" class="fa fa-star-half-full stars btn btn-outline-light" onclick="rateRecipe(4)" {% endif %}
-                        {% if 4 > average_rating %} name="rating" value="4" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(4)" {% endif %}>
-                    </button>
-                    <button 
-                        {% if 5 <=  average_rating%} name="rating" value="5" class="fa fa-star full stars btn btn-outline-light" onclick="rateRecipe(5)"  {% endif %}
-                        {% if average_rating > 4 and rating_residue >= 0.5 %} name="rating" value="5" class="fa fa-star-half-full stars btn btn-outline-light" onclick="rateRecipe(5)" {% endif %}
-                        {% if 5 > average_rating %} name="rating" value="5" class="fa fa-star-o stars btn btn-outline-light" onclick="rateRecipe(5)" {% endif %}>
-                    </button>
-                    {% else %}
-                    <span class="mr-1">
-                        {% for star in stars %}
-                            {% if star <= average_rating %}
-                                <a href="{% url 'login' %}" class="fa fa-star full stars btn btn-outline-light "></a>
-                            {% elif average_rating > star|add:-1 and rating_residue >= 0.5 %}
-                                <a href="{% url 'login' %}" class="fa fa-star-half-full stars btn btn-outline-light"></a>
-                            {% elif star > average_rating %}
-                                <a href="{% url 'login' %}" class="fa fa-star-o stars btn btn-outline-light"></a>
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                    {% endif %}
-                    <strong class="ml-0.5">{{ average_rating }}</strong>
-                    <strong class="ml" style="font-size: 12px;">({{ total_reviews }})</strong>
-                </form>
-        </div>
+                <strong>Рейтинг:</strong>
+                {% if user.is_authenticated %}
+                <button 
+                    {% if 1 <= average_rating %} class="fa fa-star full stars btn btn-outline-light align-right" {% endif %}
+                    {% if average_rating > 0 and rating_residue >= 0.5 %} class="fa fa-star-half-full stars btn btn-outline-light align-right" {% endif %}
+                    {% if 1 > average_rating %} class="fa fa-star-o stars btn btn-outline-light align-right" {% endif %}
+                    value="1" onclick="rateRecipe(1)">
+                </button>
+            
+                <button 
+                    {% if 2 <= average_rating %} class="fa fa-star full stars btn btn-outline-light align-right" {% endif %}
+                    {% if average_rating > 1 and rating_residue >= 0.5 %} class="fa fa-star-half-full stars btn btn-outline-light align-right" {% endif %}
+                    {% if 2 > average_rating %} class="fa fa-star-o stars btn btn-outline-light align-right" {% endif %}
+                    value="2" onclick="rateRecipe(2)">
+                </button>
+            
+                <button 
+                    {% if 3 <= average_rating %} class="fa fa-star full stars btn btn-outline-light align-right" {% endif %}
+                    {% if average_rating > 2 and rating_residue >= 0.5 %} class="fa fa-star-half-full stars btn btn-outline-light align-right" {% endif %}
+                    {% if 3 > average_rating %} class="fa fa-star-o stars btn btn-outline-light align-right" {% endif %}
+                    value="3" onclick="rateRecipe(3)">
+                </button>
+            
+                <button 
+                    {% if 4 <= average_rating %} class="fa fa-star full stars btn btn-outline-light align-right" {% endif %}
+                    {% if average_rating > 3 and rating_residue >= 0.5 %} class="fa fa-star-half-full stars btn btn-outline-light align-right" {% endif %}
+                    {% if 4 > average_rating %} class="fa fa-star-o stars btn btn-outline-light align-right" {% endif %}
+                    value="4" onclick="rateRecipe(4)">
+                </button>
+            
+                <button 
+                    {% if 5 <= average_rating %} class="fa fa-star full stars btn btn-outline-light align-right" {% endif %}
+                    {% if average_rating > 4 and rating_residue >= 0.5 %} class="fa fa-star-half-full stars btn btn-outline-light align-right" {% endif %}
+                    {% if 5 > average_rating %} class="fa fa-star-o stars btn btn-outline-light align-right" {% endif %}
+                    value="5" onclick="rateRecipe(5)">
+                </button>
+                {% else %}
+                <span class="mr-1">
+                    {% for star in stars %}
+                        {% if star <= average_rating %}
+                            <a href="{% url 'login' %}" class="fa fa-star full stars btn btn-outline-light "></a>
+                        {% elif average_rating > star|add:-1 and rating_residue >= 0.5 %}
+                            <a href="{% url 'login' %}" class="fa fa-star-half-full stars btn btn-outline-light"></a>
+                        {% elif star > average_rating %}
+                            <a href="{% url 'login' %}" class="fa fa-star-o stars btn btn-outline-light"></a>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                {% endif %}
+                <strong class="average-rating ml-0.5">{{ average_rating }}</strong>
+                <strong class="tot-rev" style="font-size: 12px;">(</strong>
+                <strong class="total-reviews tot-rev" style="font-size: 12px;">{{ total_reviews }}</strong>
+                <strong class="tot-rev" style="font-size: 12px;">)</strong>
+            </div>
         {% if user.is_authenticated %}
         <button id="favorite-button" data-recipe-id="{{ recipe.id }}" data-is-favorite="{{ is_favorite }}" class="btn-rectangle">
             {% if is_favorite %}
@@ -203,4 +211,49 @@
         });
     });
     </script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function rateRecipe(rating) {
+        var recipeId = '{{ recipe.id }}';
+
+        $.ajax({
+            type: 'POST',
+            url: `/recipe/${recipeId}/rate/`,
+            data: {
+                'rating': rating,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function(data) {
+                if (data && 'average_rating' in data && 'total_reviews' in data && 'rating_residue' in data) {
+                    var formattedRating = parseFloat(data.average_rating).toFixed(1).replace('.', ',');
+                    $('.average-rating').text(formattedRating);
+                    $('.total-reviews').text(data.total_reviews);
+                    updateStars(data.average_rating, data.rating_residue);
+                } else {
+                    console.error('Невірний формат даних під час оновлення рейтингу.');
+                }
+            },
+        });
+    }
+
+    function updateStars(averageRating, ratingResidue) {
+        // Отримуємо всі кнопки зірочок
+        var starButtons = $('.stars');
+
+        // Проходимося по кожній кнопці і встановлюємо потрібний клас
+        starButtons.each(function(index) {
+            var value = index + 1;
+
+            if (value <= averageRating) {
+                $(this).removeClass('fa-star-o fa-star-half-full').addClass('fa-star full');
+            } else if (averageRating < value && value - 1 < averageRating + ratingResidue) {
+                $(this).removeClass('fa-star-o fa-star full').addClass('fa-star-half-full');
+            } else {
+                $(this).removeClass('fa-star-full fa-star-half-full').addClass('fa-star-o');
+            }
+        });
+    }
+</script>
 {% endblock %}
