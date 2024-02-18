@@ -46,7 +46,17 @@ class RecipeSearchListView(ListView):
     def get_queryset(self):
         query = self.request.GET.get('q')
         if query:
-            return Recipe.objects.filter(title__icontains=query)
+            query_lower = query.lower()  # Переведення пошукового запиту в нижній регістр
+            matching_recipes = Recipe.objects.filter(title__icontains=query_lower)
+            if not matching_recipes:
+                matching_recipes = Recipe.objects.filter(title__icontains=query_lower.capitalize())
+                if not matching_recipes:
+                    words = query_lower.split()
+                    for word in words:
+                        matching_recipes |= Recipe.objects.filter(title__icontains=word)
+                        if matching_recipes.count() >= 5:
+                            break
+            return matching_recipes
         return Recipe.objects.all()
 
     def get_context_data(self, **kwargs):
@@ -120,7 +130,7 @@ class RecipeDetailView(View):
             rating_residue = 0
 
         if request.user.is_authenticated:
-            # Перевірте, чи рецепт улюблений користувачем
+            # Перевіряємо, чи рецепт улюблений користувачем
             if FavoriteRecipe.objects.filter(recipe=recipe, user=request.user).exists():
                 is_favorite = True
 

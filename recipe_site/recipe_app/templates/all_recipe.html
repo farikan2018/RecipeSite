@@ -24,7 +24,7 @@
             {% for recipe in recipes %}
             <div class="col-md-6 mb-4 recipe-card" data-recipe-id="{{ recipe.id }}">
                 <div class="card hvr-shrink">
-                    <img src="{{ recipe.recipe_image.url }}" class="fixed-image" alt="{{ recipe.title }}">
+                    <img src="{{ recipe.recipe_image.url }}" class="image-container" alt="{{ recipe.title }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ recipe.title }}</h5>
                         <p class="card-text">

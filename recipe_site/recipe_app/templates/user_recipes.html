@@ -1,8 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Сторінка з карточками{% endblock %}
+{% block title %}Мої рецепти{% endblock %}
 
 {% block content %}
+<style>
+    .header-rectangle {
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="header-rectangle">Мої рецепти</h1>
+    </div>
+</div>
 
     <div class="container text-center">
         {% if recipes %}

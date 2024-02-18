@@ -42,16 +42,22 @@
     <style>
         .header-rectangle {
             background-color: #FFA500;
-            border-radius: 36px;
-            font-size: 44px;
+            border-radius: 2.5vw; /* використовуємо vw для адаптивної округленості */
+            font-size: 2.9vw; /* використовуємо vw для адаптивного розміру шрифту */
             font-family: "RocknRoll One", sans-serif;
             color: black;
             text-align: center;
-            padding: 20px;
-            margin-bottom: 0px;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
+            padding: 1.2vw 0; /* використовуємо vw для адаптивного відступу */
+            margin: 0 auto;
+            width: 80%; /* використовуємо відсотки для адаптивної ширини */
+            max-width: 565px; /* обмежуємо максимальну ширину для десктопів */
+        }
+
+        /* Медіа-запит для зміни розміру шрифту на менших екранах */
+        @media screen and (max-width: 768px) {
+            .header-rectangle {
+                font-size: 7vw; /* зменшуємо розмір шрифту для менших екранів */
+            }
         }
 
         .btn-rectangle {
@@ -61,13 +67,13 @@
             font-family: "RocknRoll One", sans-serif;
             color: black;
             text-align: center;
-            margin-bottom: 0px;
+            margin-top: 1px;
         }
 
         .link-rentacle {
             margin-top: 2px;
             background-color: #FFA500;
-            border-radius: 15px;
+            border-radius: 13px;
             font-size: 18px;
             font-family: "RocknRoll One", sans-serif;
             text-align: center;
@@ -84,6 +90,9 @@
             max-height: 300px;
             object-fit: cover;
             border-radius: 10px;
+            width: 500px;
+            height: 300px;
+            object-fit: cover;
         }
     
         .recipe-details {
@@ -163,10 +172,25 @@
             transform: scale(0.97);
         }
 
-        .fixed-image {
-            width: 500px;
-            height: 300px;
+        .martop {
+            margin: 20px auto 0; /* додаємо відступ зверху */
+            border-radius: 10px;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            height: 300px; /* фіксована висота */
+            position: relative; /* потрібно для вирівнювання тексту */
+            aspect-ratio: 6 / 3; /* змініть це співвідношення на те, яке вам потрібно */
+        } /* закриваючий тег пропущено */
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+            object-position: center; /* це вирівняє зображення по горизонталі та вертикалі */
         }
 
         .stars {
