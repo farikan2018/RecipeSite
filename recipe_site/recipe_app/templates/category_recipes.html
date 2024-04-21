@@ -31,6 +31,20 @@
                             Скл-сть приготування: {{ recipe.difficulty_level|slice:":150" }}<br>
                             Час приготування: {{ recipe.preparation_time|slice:":150" }}<br>
                             Автор: {{ recipe.author|slice:":150" }}<br>
+                            <strong>Рейтинг: </strong>
+                            <span class="mr-1">
+                                {% for star in stars %}
+                                    {% if star <= recipe.average_rating %}
+                                        <i class="fa fa-star full stars-all"></i>
+                                    {% elif recipe.average_rating > star|add:-1 and recipe.rating_residue >= 0.5 %}
+                                        <i class="fa fa-star-half-full stars-all"></i>
+                                    {% else %}
+                                        <i class="fa fa-star-o stars-all"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <strong class="average-rating ml-0.5">{{ recipe.average_rating }}</strong>
+                            <strong class="total-reviews tot-rev" style="font-size: 12px;">({{ recipe.total_reviews }})</strong> 
                         </p>
                     </div>
                 </div>

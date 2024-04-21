@@ -33,8 +33,14 @@ class CategoryRecipesView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['category'] = Category.objects.get(pk=self.kwargs['category_id'])
+        recipe_list = context[self.context_object_name]
+        add_ratings_to_recipes(recipe_list)
+        context[self.context_object_name] = recipe_list
+        stars = [1, 2, 3, 4, 5]
+        context['stars'] = stars
+        print(context)
         return context
+
     
 
 class RecipeSearchListView(ListView):
@@ -61,8 +67,14 @@ class RecipeSearchListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q')
-        return context    
+        recipe_list = context[self.context_object_name]
+        add_ratings_to_recipes(recipe_list)
+        context[self.context_object_name] = recipe_list
+        stars = [1, 2, 3, 4, 5]
+        context['stars'] = stars
+        print(context)
+        return context
+    
 
 
 class AllRecipe(ListView):
@@ -70,6 +82,17 @@ class AllRecipe(ListView):
     template_name = 'all_recipe.html'
     context_object_name = 'recipes'
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe_list = context[self.context_object_name]
+
+        add_ratings_to_recipes(recipe_list)  
+        context[self.context_object_name] = recipe_list
+        stars = [1, 2, 3, 4, 5]
+        context['stars'] = stars
+        print(context)
+        return context
 
     def get_queryset(self):
         return Recipe.objects.filter(publish=True)
@@ -119,18 +142,9 @@ class RecipeDetailView(View):
         is_favorite = False  # Початково рецепт не улюблений
 
         # Логіка для обчислення середнього рейтингу
-        reviews = Rating.objects.filter(recipe=recipe)
-        total_reviews = reviews.count()
-        if total_reviews > 0:
-            total_rating = sum(review.rating_value for review in reviews)
-            average_rating = round(total_rating / total_reviews, 2)
-            rating_residue = average_rating % 1
-        else:
-            average_rating = 0
-            rating_residue = 0
+        average_rating, total_reviews, rating_residue = calculate_average_rating(recipe)
 
         if request.user.is_authenticated:
-            # Перевіряємо, чи рецепт улюблений користувачем
             if FavoriteRecipe.objects.filter(recipe=recipe, user=request.user).exists():
                 is_favorite = True
 
@@ -183,6 +197,27 @@ class RecipeDetailView(View):
             'rating_form': rating_form,
         })
     
+
+def calculate_average_rating(recipe):
+    reviews = Rating.objects.filter(recipe=recipe)
+    total_reviews = reviews.count()
+    if total_reviews > 0:
+        total_rating = sum(review.rating_value for review in reviews)
+        average_rating = round(total_rating / total_reviews, 2)
+        rating_residue = average_rating % 1
+    else:
+        average_rating = 0
+        rating_residue = 0
+    return average_rating, total_reviews, rating_residue
+
+
+def add_ratings_to_recipes(recipes):
+    for recipe in recipes:
+        average_rating, total_reviews, rating_residue = calculate_average_rating(recipe)
+        recipe.average_rating = average_rating
+        recipe.total_reviews = total_reviews
+        recipe.rating_residue = rating_residue
+
 
 def rate_recipe(request, recipe_id):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -248,7 +283,8 @@ class FavoriteRecipesView(View):
             favorite_recipes = FavoriteRecipe.objects.filter(user=user)
             # Отримання списку рецептів, які є улюбленими для даного користувача
             recipes = [fav.recipe for fav in favorite_recipes]
-            return render(request, self.template_name, {'favorite_recipes': favorite_recipes, 'recipes': recipes})
+            add_ratings_to_recipes(recipes)
+            return render(request, self.template_name, {'favorite_recipes': favorite_recipes, 'recipes': recipes, 'stars': [1,2,3,4,5]})
         else:
             return render(request, 'not_authenticated.html')
         
@@ -261,4 +297,6 @@ class UserRecipeListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Recipe.objects.filter(author=self.request.user)
+        recipes = Recipe.objects.filter(author=self.request.user)
+        add_ratings_to_recipes(recipes)
+        return recipes

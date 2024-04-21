@@ -25,9 +25,21 @@
         <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none"></a>
 
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Головна</a></li>
-            <li><a href="{% url 'all_recipe' %}" class="nav-link px-2 link-dark">Всі рецепти</a></li>
-            <li><a href="{% url 'create_recipe' %}" class="nav-link px-2 link-dark">Запропонувати рецепт</a></li>
+            {% if request.path == '/' %}
+                <li><a href="{% url 'home' %}" class="nav-link px-2 link-secondary alert-link">Головна</a></li>
+            {% else %}
+                <li><a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Головна</a></li>
+            {% endif %}
+            {% if request.path == '/all_recipe/' %}
+                <li><a href="{% url 'all_recipe' %}" class="nav-link px-2 link-secondary alert-link">Всі рецепти</a></li>
+            {% else %}
+                <li><a href="{% url 'all_recipe' %}" class="nav-link px-2 link-dark">Всі рецепти</a></li>
+            {% endif %}
+            {% if request.path == '/create_recipe/' %}
+                <li><a href="{% url 'create_recipe' %}" class="nav-link px-2 link-secondary alert-link">Запропонувати рецепт</a></li>
+            {% else %}
+                <li><a href="{% url 'create_recipe' %}" class="nav-link px-2 link-dark">Запропонувати рецепт</a></li>
+            {% endif %}
         </ul>
         <div class="col-md-3 text-end">
             {% if request.user.is_authenticated %}
@@ -197,6 +209,11 @@
             font-size: 20px;
             color: orange;
             margin-bottom: 3px;
+        }
+
+        .stars-all {
+            font-size: 20px;
+            color: orange;
         }
 
         .align-right {
