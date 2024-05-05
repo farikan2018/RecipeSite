@@ -6,7 +6,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6">
             <form action="{% url 'search_recipes' %}" method="GET">
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" placeholder="Знайди необхідний рецепт" name="q">
@@ -16,6 +16,24 @@
                 </div>
             </form>
         </div>
+    </div>
+
+    <div class="container mb-3">
+        {% if request.GET.sort_by == "rating" %}
+            <a href="?sort_by=reverse_rating" class="sort-link ml-4">Відсортувати за рейтингом</a>
+        {% else %}
+            <a href="?sort_by=rating" class="sort-link ml-4">Відсортувати за рейтингом</a>
+        {% endif %}
+        {% if request.GET.sort_by == "popular" %}
+            <a href="?sort_by=reverse_popular" class="sort-link ml-4">Відсортувати за популярністю</a>
+        {% else %}
+            <a href="?sort_by=popular" class="sort-link ml-4">Відсортувати за популярністю</a>
+        {% endif %}
+        {% if request.GET.sort_by == "difficulty" %}
+            <a href="?sort_by=reverse_difficulty" class="sort-link ml-4">Відсортувати за складністю</a>
+        {% else %}
+            <a href="?sort_by=difficulty" class="sort-link ml-4">Відсортувати за складністю</a>
+        {% endif %}
     </div>
 
     <div class="container text-center">

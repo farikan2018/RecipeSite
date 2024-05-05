@@ -12,6 +12,9 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.db.models import Q
 
 
 class HomeRecipe(ListView):
@@ -29,7 +32,12 @@ class CategoryRecipesView(ListView):
 
     def get_queryset(self):
         category_id = self.kwargs['category_id']
-        return Recipe.objects.filter(category_id=category_id, publish=True)
+        queryset = Recipe.objects.filter(category_id=category_id, publish=True)
+        sorting = self.request.GET.get('sort_by', None)
+        if sorting:
+            queryset = sort_recipes(queryset, sorting)
+        return queryset
+     
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,10 +46,8 @@ class CategoryRecipesView(ListView):
         context[self.context_object_name] = recipe_list
         stars = [1, 2, 3, 4, 5]
         context['stars'] = stars
-        print(context)
         return context
 
-    
 
 class RecipeSearchListView(ListView):
     model = Recipe
@@ -72,7 +78,6 @@ class RecipeSearchListView(ListView):
         context[self.context_object_name] = recipe_list
         stars = [1, 2, 3, 4, 5]
         context['stars'] = stars
-        print(context)
         return context
     
 
@@ -91,11 +96,57 @@ class AllRecipe(ListView):
         context[self.context_object_name] = recipe_list
         stars = [1, 2, 3, 4, 5]
         context['stars'] = stars
-        print(context)
         return context
 
     def get_queryset(self):
-        return Recipe.objects.filter(publish=True)
+        queryset = Recipe.objects.filter(publish=True)
+        sorting = self.request.GET.get('sort_by', None)
+        if sorting:
+            queryset = sort_recipes(queryset, sorting)
+        return queryset
+
+
+def sort_recipes(queryset, sorting):
+    if sorting == 'rating' or 'reverse_rating':
+        recipe_ratings = [
+            (recipe.id, *calculate_average_rating(recipe))
+            for recipe in queryset
+        ]
+        # Сортуємо список рейтингів за середнім рейтингом
+        if sorting == 'rating':
+            recipe_ratings.sort(key=lambda x: x[1], reverse=True)
+        elif sorting == 'reverse_rating':
+            recipe_ratings.sort(key=lambda x: x[1], reverse=False)
+        # Отримуємо список id рецептів відсортованих за рейтингом
+        sorted_recipe_ids = [rating[0] for rating in recipe_ratings]
+        # Змінюємо порядок рецептів в queryset, використовуючи відсортовані id
+        queryset = sorted(queryset, key=lambda x: sorted_recipe_ids.index(x.id))
+
+    if sorting == 'popular' or 'reverse_popular':
+        recipe_ratings = [
+            (recipe.id, Rating.objects.filter(recipe=recipe).count())
+            for recipe in queryset
+        ]
+        # Сортуємо список рейтингів за загальною кількістю
+        if sorting == 'popular':
+            recipe_ratings.sort(key=lambda x: x[1], reverse=True)
+        elif sorting == 'reverse_popular':
+            recipe_ratings.sort(key=lambda x: x[1], reverse=False)
+        # Отримуємо список id рецептів відсортованих за загальною кількістю рейтингів
+        sorted_recipe_ids = [rating[0] for rating in recipe_ratings]
+        # Змінюємо порядок рецептів в queryset, використовуючи відсортовані id
+        queryset = sorted(queryset, key=lambda x: sorted_recipe_ids.index(x.id))
+
+    if sorting == 'difficulty' or sorting == 'reverse_difficulty':
+        recipe_ids = [recipe.id for recipe in queryset]
+        q_objects = Q(id__in=recipe_ids)
+        queryset = Recipe.objects.filter(q_objects)
+        if sorting == 'difficulty':
+            queryset = queryset.order_by('difficulty_level')
+        elif sorting == 'reverse_difficulty':
+            queryset = queryset.order_by('-difficulty_level')
+
+    return queryset
 
 
 def register_view(request):

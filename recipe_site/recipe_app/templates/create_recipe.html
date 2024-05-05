@@ -32,10 +32,9 @@
         <button type="submit" class="btn btn-success" id="submitRecipeButton">Запропонувати публікацію</button>
         <span>{{ error }}</span>
         {% else %}
-        <h5>Для пропозиції запису потрібно увійти в акаунт</h5>
+        <a href="{% url 'login' %}" class="btn link-rentacle2">Запропонувати публікацію</a>
         {% endif %}
     </form>
 </div><br>
-
 
 {% endblock %}
